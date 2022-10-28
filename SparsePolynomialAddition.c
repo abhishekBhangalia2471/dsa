@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <string.h>
+
 #include <stdlib.h>
 
 typedef struct polyTerm
@@ -8,28 +8,34 @@ typedef struct polyTerm
 	int coeff;
 } PolyTerm;
 
-void inputPoly(PolyTerm* poly);
-void displayPoly(PolyTerm poly[]);
-PolyTerm* addPoly(PolyTerm poly1[], PolyTerm poly2[]);
+void inputPoly(PolyTerm poly[],int size);
+void displayPoly(PolyTerm poly[],int size);
+void addPoly(PolyTerm poly1[], PolyTerm poly2[],PolyTerm polySum[]);
 
 int main(int argc, char *argv[])
 {
-	int totalTerms1, totalTerms2;
+	int totalTerms1, totalTerms2,size;
     printf("\n.............Polynomial Addition.............");
 
 	printf("\n\nEnter total number of terms in polynomial 1 : ");
 	scanf("%d", &totalTerms1);
-	// PolyTerm *poly1 = (PolyTerm *)malloc(totalTerms1 * sizeof(PolyTerm));
+	 //PolyTerm *poly1 = (PolyTerm *)malloc(totalTerms1 * sizeof(PolyTerm));
+	 //sizeof poly1 will give size of pointer if malloc is used so using other method of array initiization
     PolyTerm poly1[totalTerms1];
-   // printf("%d %d main",sizeof(poly1),sizeof(poly1[0]));
-	inputPoly(poly1);
+   printf("%d %d main",sizeof(poly1),sizeof(poly1[0]));
+   size = sizeof(poly1)/sizeof(PolyTerm);
+	inputPoly(poly1,size);
 
-	printf("Enter total number of terms in polynomial 2 : ");
+	printf("\n\nEnter total number of terms in polynomial 2 : ");
 	scanf("%d", &totalTerms2);
 	PolyTerm poly2[totalTerms2];
-	inputPoly(poly2);
+	
+	size = sizeof(poly2)/sizeof(PolyTerm);
+	inputPoly(poly2,size);
+	
 
-	PolyTerm* polySum = (PolyTerm *)malloc((totalTerms1 + totalTerms2) * sizeof(PolyTerm));
+//	PolyTerm* polySum = (PolyTerm *)malloc((totalTerms1 + totalTerms2) * sizeof(PolyTerm));
+	PolyTerm polySum[totalTerms1+totalTerms2];
 	// int k = 0;
 	// for (int i = 0; i < totalTerms1; i++)
 	// {
@@ -43,20 +49,22 @@ int main(int argc, char *argv[])
 	// 	}
 	// }
     
-    printf("Polynomial 1 : ");
-    displayPoly(poly1);
-    printf("Polynomial 1 : ");
-    displayPoly(poly2);
+    printf("\nPolynomial 1 : ");
+   displayPoly(poly1,totalTerms1);
+    printf("\nPolynomial 2 : ");
+    displayPoly(poly2,totalTerms2);
 
-    printf("Polynomial 1 + Polynomial 2 : ");
-    polySum = addPoly(poly1,poly2);
-    displayPoly(polySum);
+    printf("\nPolynomial 1 + Polynomial 2 : ");
+    addPoly(poly1,poly2,polySum);
+    displayPoly(polySum,totalTerms1+totalTerms2);
 }
 
-void inputPoly(PolyTerm* poly){
-    printf("%d %d %d %d",sizeof(poly),sizeof(poly[0]),*(&poly + 1)- poly,sizeof(PolyTerm));
+void inputPoly(PolyTerm poly[], int size){
+    //int size = (*(&poly + 1)- poly)/sizeof(PolyTerm);
+    printf("%d",size);
+   // printf("%d %d %d %d",sizeof(poly),sizeof(poly[0]),*(&poly + 1)- poly,sizeof(PolyTerm));
 
-    for (int i = 0; i < sizeof(&poly)/sizeof(PolyTerm); i++)
+    for (int i = 0; i < size; i++)
 	{ 
 		printf("\n\nElement %d:\nEnter exponent : ",i+1);
 		scanf("%d", &poly[i].exp);
@@ -66,12 +74,15 @@ void inputPoly(PolyTerm* poly){
 }
 
 
-PolyTerm* addPoly(PolyTerm poly1[], PolyTerm poly2[]){
+void addPoly(PolyTerm poly1[], PolyTerm poly2[],PolyTerm polySum[]){
     int i,j,k;
     i=0;j=0;k=0;
-    PolyTerm* polySum = (PolyTerm*) malloc((sizeof(poly1)+sizeof(poly2)));
+    int size1 = (*(&poly1 + 1)- poly1)/sizeof(PolyTerm);
+    int size2 = (*(&poly2 + 1)- poly2)/sizeof(PolyTerm);
+   // PolyTerm polySum[size1+size2];
+    int size3 = (*(&polySum + 1)- polySum)/sizeof(PolyTerm);
 
-    while (i<sizeof(poly1)/sizeof(PolyTerm) && j<sizeof(poly2)/sizeof(PolyTerm))
+    while (i<size1 && j<size2)
     {
         if(poly1[i].exp == poly2[j].exp){
             polySum[k].exp = poly1[i].exp;
@@ -86,32 +97,35 @@ PolyTerm* addPoly(PolyTerm poly1[], PolyTerm poly2[]){
     }
 
     //for left over terms
-    while(i<sizeof(poly1) / sizeof(PolyTerm)){
+    while(i<size1){
         polySum[k++] = poly1[i++];
     }
-    while(j<sizeof(poly2) / sizeof(PolyTerm)){
+    while(j<size2){
         polySum[k++] = poly2[j++];
     }
-    return polySum;
+    
 }
 
-void displayPoly(PolyTerm poly[]){
-    char sum[] = "";
-	char holder[10];
+void displayPoly(PolyTerm poly[], int size){
+    char sum[100] = "";
+	char holder[100];
     int i;
-	for (i = 0; i < (sizeof(poly) / sizeof(PolyTerm)) - 1; i++)
+	for (i = 0; i < size ; i++)
 	{
-		sprintf(holder, "%d", poly[i].coeff);
-		strcat(sum, holder);
-		strcat(sum, "x^");
-		sprintf(holder, "%d", poly[i].exp);
-		strcat(sum, holder);
-		strcat(sum, " + ");
+		//sprintf(holder, "%d", poly[i].coeff);
+		printf("coeff : %d",poly[i].coeff);
+		printf("exp : %d",poly[i].exp);
+		//strcat(sum, holder);
+		//strcat(sum, "x^");
+		//sprintf(holder, "%d", poly[i].exp);
+	//	strcat(sum, holder);
+		//strcat(sum, " + ");
 	}
-    sprintf(holder, "%d", poly[i].coeff);
-    strcat(sum, holder);
-    strcat(sum, "x^");
-    sprintf(holder, "%d", poly[i].exp);
-    strcat(sum, holder);
-	printf(sum);
+	//sprintf(holder, "%d", poly[i].coeff);
+	//strcat(sum, holder);
+	//strcat(sum, "x^");
+	//	sprintf(holder, "%d", poly[i].exp);
+	//strcat(sum, holder);
+//	printf("%s",sum);
+    
 }
