@@ -8,7 +8,7 @@ typedef struct polyTerm
 	int coeff;
 } PolyTerm;
 
-void inputPoly(PolyTerm poly[]);
+void inputPoly(PolyTerm* poly);
 void displayPoly(PolyTerm poly[]);
 PolyTerm* addPoly(PolyTerm poly1[], PolyTerm poly2[]);
 
@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 	scanf("%d", &totalTerms1);
 	// PolyTerm *poly1 = (PolyTerm *)malloc(totalTerms1 * sizeof(PolyTerm));
     PolyTerm poly1[totalTerms1];
+   // printf("%d %d main",sizeof(poly1),sizeof(poly1[0]));
 	inputPoly(poly1);
 
 	printf("Enter total number of terms in polynomial 2 : ");
@@ -52,10 +53,10 @@ int main(int argc, char *argv[])
     displayPoly(polySum);
 }
 
-void inputPoly(PolyTerm poly[]){
-    printf("%d %d %d",sizeof(poly),sizeof(poly[0]),*(&poly + 1)- poly);
+void inputPoly(PolyTerm* poly){
+    printf("%d %d %d %d",sizeof(poly),sizeof(poly[0]),*(&poly + 1)- poly,sizeof(PolyTerm));
 
-    for (int i = 0; i < ((&poly + 1) - &poly); i++)
+    for (int i = 0; i < sizeof(&poly)/sizeof(PolyTerm); i++)
 	{ 
 		printf("\n\nElement %d:\nEnter exponent : ",i+1);
 		scanf("%d", &poly[i].exp);
