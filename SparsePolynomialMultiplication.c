@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 typedef struct polyTerm
@@ -13,9 +12,9 @@ void displayPoly(PolyTerm poly[],int size);
 void multiplyPoly(PolyTerm poly1[], PolyTerm poly2[],PolyTerm polyProduct[]);
 int totalTerms1, totalTerms2,totalTerms3;
 
-int main(int argc, char *argv[])
+int main()
 {
-    printf("\n.............Polynomial Addition.............");
+    printf("\n.............Polynomial Multiplication.............");
 	printf("\n\nEnter total number of terms in polynomial 1 : ");
 	scanf("%d", &totalTerms1);
 
@@ -36,9 +35,9 @@ int main(int argc, char *argv[])
     displayPoly(poly1,totalTerms1);
     printf("\nPolynomial 2 : ");
     displayPoly(poly2,totalTerms2);
-    printf("\nPolynomial 1 + Polynomial 2 : ");
+    printf("\nPolynomial 1 X Polynomial 2 : ");
     multiplyPoly(poly1,poly2,polyProduct);
-    displayPoly(polySum,totalTerms3);
+    displayPoly(polyProduct,totalTerms3);
     return 0;
 }
 
@@ -56,15 +55,14 @@ void multiplyPoly(PolyTerm poly1[], PolyTerm poly2[],PolyTerm polyProduct[]){
     int i,j,k;
     i=0;j=0;k=0;
 
-    for(int i=0; i<totalTerms1; i++){
-        for(int j=0; j<totalTerms2; j++){
+    for( i=0; i<totalTerms1; i++){
+        for( j=0; j<totalTerms2; j++){
             polyProduct[k].coeff = poly1[i].coeff * poly2[j].coeff;
             polyProduct[k++].exp = poly1[i].exp + poly2[j].exp;
         }
     }
-    
-    
 }
+
 
 void displayPoly(PolyTerm poly[], int size){
     char sum[100] = "";

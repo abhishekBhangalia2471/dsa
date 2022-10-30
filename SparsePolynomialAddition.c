@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 typedef struct polyTerm
@@ -13,7 +12,7 @@ void displayPoly(PolyTerm poly[],int size);
 void addPoly(PolyTerm poly1[], PolyTerm poly2[],PolyTerm polySum[]);
 int totalTerms1, totalTerms2,totalTerms3;
 
-int main(int argc, char *argv[])
+int main()
 {
     printf("\n.............Polynomial Addition.............");
 	printf("\n\nEnter total number of terms in polynomial 1 : ");
@@ -105,5 +104,5 @@ void displayPoly(PolyTerm poly[], int size){
 	strcat(sum, "x^");
 	sprintf(holder, "%d", poly[i].exp);
 	strcat(sum, holder);
-	printf("%s",sum);
+	printf("%s\n",sum);
 }
