@@ -1,184 +1,261 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <limits.h>
+#include <math.h>
 
 // order 5
 // max keys = 4
 // min keys = 2
 // max children = 5
 // min children = 3
-#define MAX 5 // max children
-#define MIN 3 // min children
+// #define MAX 5 // max children
+// #define MIN 3 // min children
 
-typedef struct Btnode *Btreeptr;
-typedef struct Btnode
+int MAX=5,MIN=3;
+
+typedef struct BTnode *btptr;
+typedef struct BTnode
 {
-    Btreeptr parent;
-    int key[MAX]; // keeping extra key
-    Btreeptr keyaddress[MAX];
-    Btreeptr child[MAX + 1]
-} btreenode;
+    btptr parent;
+    int* key; // keeping extra key
+    btptr* keyaddr;
+    btptr* child;
+} btnode;
 
-Btreeptr createnode();
-void insert(Btreeptr, int);
-void display(Btreeptr);
-void fulldisplay(Btreeptr);
-void spiltnode(Btreeptr);
-void upperspiltnode(Btreeptr);
+btptr createnode();
+void insert(btptr, int);
+void display(btptr);
+void displayTree(btptr);
+void split_node(btptr);
+void merge_node(btptr);
+void bubbleSortKeys(int arr[], int n);
+void bubbleSortKeysWithChildren(int arr[], int n, btptr childArr[]);
+void swap(int *xp, int *yp);
+void swapPointers(btptr *x, btptr *y);
 
+btptr root;
 int main()
 {
-    Btreeptr dumy = createnode();
-    // putting random address  latter used this to check parent != NULL
-    // to avoid segmentation error
-    dumy->parent = dumy;
+    printf("\n...................B-Tree..................");
+    int order; 
+    printf("\nEnter order of B-Tree : ");
+    scanf("%d",&MAX);
+    MIN = ceil(MAX/2) + 1;
+    printf("\nMAX : %d,MIN : %d",MAX,MIN);
+    root = createnode();
+    root->parent = root;
+    
+    // insert(root, 40);
+    // insert(root, 20);
+    // insert(root, 30);
+    // insert(root, 10);
+    // insert(root, 8);
+    // insert(root, 7);
+    // displayTree(root);
+    // insert(root, 6);
+    // displayTree(root);
 
-    insert(dumy, 20);
-    insert(dumy, 40);
-    insert(dumy, 60);
-    insert(dumy, 80);
-    display(dumy);
-    printf("\n inserting 100 it will split root node");
-    insert(dumy, 100);
-
-    fulldisplay(dumy);
-    printf("\n inserting 50 55 ");
-    insert(dumy, 50);
-    insert(dumy, 55);
-    fulldisplay(dumy);
-    printf("\n inserting 120 125");
-    insert(dumy, 120);
-    insert(dumy, 125);
-    fulldisplay(dumy);
-    printf("\n inserting 140 it will call upper spilt");
-    insert(dumy, 140);
-
-    fulldisplay(dumy);
-    printf("\n inserting 110 115");
-    insert(dumy, 110);
-    insert(dumy, 115);
-    insert(dumy, 116);
-    insert(dumy, 117);
-    insert(dumy, 118);
-    insert(dumy, 119);
-    fulldisplay(dumy);
+    
+    int choice,val;
+    do{
+		printf("\n\nSelect your operation :\n\n1. Insert key\n2. Delete key\n3. Display B-Tree\n0. QUIT\n\nEnter your choice here (0-3) : ");
+		scanf("%d",&choice);
+		if(choice==1){
+			printf("\nEnter the key that you want to insert into B-Tree : ");
+			scanf("%d",&val);
+			insert(root,val);
+		}
+		else if(choice == 2){
+			printf("\nEnter the number that you want to delete from B-Tree : ");
+			scanf("%d",&val);
+			// AVL_Delete(root,val);
+		}
+		else if(choice ==3){
+            displayTree(root);
+		}
+		else if (choice ==0){
+			printf("\n\nQuiting...");
+			return 0;
+		}
+	}while(choice!=0);
 
     return 0;
 }
-void insert(Btreeptr node, int keyval)
+
+
+void insert(btptr node, int keyval)
 {
-    bool childEmpty = false;
+    bool childEmpty = true;
     for (int i = 0; i < MAX; i++)
     {
-        if (node->child[i] != NULL && node->key[i] != -1 && keyval < node->key[i])
+        if (node->child[i] != NULL && keyval < node->key[i])
         {
             insert(node->child[i], keyval);
-            childEmpty = true;
-            break;
-        }
-        else if (node->child[i] != NULL && node->key[i] == -1 && ((node->key[i - 1] != -1) && (keyval > node->key[i - 1])))
-        {
-            insert(node->child[i], keyval);
-            childEmpty = true;
+            childEmpty = false;
             break;
         }
     }
-    if (!childEmpty)
+    if (childEmpty)
     {
         for (int i = 0; i < MAX; i++)
         {
-            if (node->key[i] == -1)
+            if (node->key[i] == INT_MAX)
             {
                 node->key[i] = keyval;
                 break;
             }
         }
-        if (node->key[MAX - 1] != -1 && node->parent->key[MAX - 1] != -1) // node overflow
-            spiltnode(node);
-        else if (node->key[MAX - 1] != -1 && node->parent->key[MAX - 1] == -1)
-            upperspiltnode(node);
+        bubbleSortKeys(node->key, MAX);
+        if (node->key[MAX - 1] != INT_MAX && node->parent == node)
+        { // node overflow
+            split_node(node);
+        }
+        else if (node->key[MAX - 1] != INT_MAX && node->parent->key[MAX - 1] == INT_MAX)
+        {
+            merge_node(node);
+            bubbleSortKeysWithChildren(node->parent->key, MAX, node->parent->child);
+            if (node->parent->key[MAX - 1] != INT_MAX)
+                merge_node(node->parent);
+        }
     }
 }
 
-void display(Btreeptr root)
+void display(btptr root)
 {
     for (int i = 0; i < MAX; i++)
-    {
         printf("%d ", root->key[i]);
-    }
-}
-void fulldisplay(Btreeptr root)
+}   
+
+void displayTree(btptr root)
 {
     printf("\nroot  ");
     display(root);
-    for (int i = 0; i < MAX; i++)
-    {
-        printf("\nchild node  ");
-        printf("%d  ", i);
-        display(root->child[i]);
-    }
+    if(root->child[0] != NULL)
+        for (int i = 0; i < MAX+1; i++)
+        {
+            printf("\nchild node %d  : ",i);
+            displayTree(root->child[i]);
+        }
+    printf("\n");
 }
-Btreeptr createnode()
+
+btptr createnode()
 {
-    Btreeptr btnode = (Btreeptr)malloc(sizeof(btreenode));
-    btnode->parent = NULL;
-    for (int i = 0; i < MAX; i++)
+    btptr tmp = (btptr)malloc(sizeof(btnode));
+    tmp->key = (int*) malloc(sizeof(int) * MAX);
+    tmp->child = (btptr*) malloc(sizeof(btptr) * (MAX+1));
+    tmp->keyaddr = (btptr*) malloc(sizeof(btptr) * MAX);
+    tmp->parent = NULL;
+    int i;
+    for (i = 0; i < MAX; i++)
     {
-        btnode->key[i] = -1;
-        btnode->keyaddress[i] = NULL;
-        btnode->child[i] = NULL;
+        tmp->key[i] = INT_MAX;
+        tmp->keyaddr[i] = NULL;
+        tmp->child[i] = NULL;
     }
-    return btnode;
+    tmp->child[i] = NULL;
+    return tmp;
 }
-void spiltnode(Btreeptr node)
+
+void split_node(btptr node)
 {
     printf("\nsplitNode");
 
     for (int i = 0; i < MAX + 1; i++)
     {
-        node->child[i] = createnode();
-        node->child[i]->parent = node;
+        (node)->child[i] = createnode();
+        (node)->child[i]->parent = (node);
     }
     for (int i = 0; i < MIN - 1; i++)
     {
-        node->child[0]->key[i] = node->key[i];
-        node->child[1]->key[i] = node->key[i + MIN];
+        (node)->child[0]->key[i] = (node)->key[i];
+        (node)->child[1]->key[i] = (node)->key[i + MIN];
     }
-    node->key[0] = node->key[MIN - 1];
+    (node)->key[0] = (node)->key[MIN - 1];
     for (int i = 1; i < MAX; i++)
     {
-        node->key[i] = -1;
+        (node)->key[i] = INT_MAX;
     }
 }
-void upperspiltnode(Btreeptr node)
-{
-    printf("\nuppersplitnode");
 
-    int i = 0;
-    for (i = 0; i < MAX + 1; i++)
+void merge_node(btptr node)
+{
+    printf("\nmergenode");
+
+    int i, j;
+    if (node->parent != node)
     {
-        if (node->parent->child[i]->key[1] == -1)
-        {
-            break;
-        }
+        for (i = 0; i < MAX + 1; i++)
+            if (node->parent->child[i]->key[0] == INT_MAX) // finding first null child
+                break;
+
+        for (j = 0; j < MAX; j++)
+            if (node->parent->key[j] == INT_MAX) // finding first null key
+                break;
     }
-    int j = 0;
-    for (j = 0; j < MAX; j++)
+    else
     {
-        if (node->parent->key[j] == -1)
-        {
-            break;
+        btptr newroot = createnode();
+        btptr child = createnode();
+        node->parent = newroot;
+        newroot->child[0] = node;
+        newroot->child[1] = child;
+        for (int k = 2; k < MAX + 1; k++)
+            newroot->child[k] = createnode();
+        for(int k=0; k<=MAX-MIN; k++){
+            newroot->child[1]->child[k] = newroot->child[0]->child[k+MIN]; 
+            newroot->child[0]->child[k+MIN] = createnode();
         }
+        for(int k=MAX-MIN+1; k<MAX+1; k++)
+            newroot->child[1]->child[k] = createnode();
+        i = 1;
+        j = 0;
+        root = newroot;
     }
-    // after both loop we have value of i and j
+
     node->parent->key[j] = node->key[MIN - 1];
-    node->key[MIN - 1] = -1;
-    // run loop 2 times
+    node->key[MIN - 1] = INT_MAX;
 
     for (int k = 0; k < MAX - MIN; k++)
     {
         node->parent->child[i]->key[k] = node->key[k + MIN];
-        //  printf("\n%d^",node->parent->child[i]->key[k]);
-        node->key[k + MIN] = -1;
+        node->key[k + MIN] = INT_MAX;
     }
+}
+
+void swap(int *xp, int *yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+void swapPointers(btptr *x, btptr *y)
+{
+    btptr temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+void bubbleSortKeysWithChildren(int arr[], int n, btptr childArr[])
+{
+    int i, j;
+    for (i = 0; i < n - 1; i++)
+        // Last i elements are already in place
+        for (j = 0; j < n - i - 1; j++)
+            if (arr[j] > arr[j + 1])
+            {
+                swap(&arr[j], &arr[j + 1]);
+                swapPointers(&childArr[j + 1], &childArr[j + 2]);
+            }
+}
+
+void bubbleSortKeys(int arr[], int n)
+{
+    int i, j;
+    for (i = 0; i < n - 1; i++)
+        for (j = 0; j < n - i - 1; j++)
+            if (arr[j] > arr[j + 1])
+                swap(&arr[j], &arr[j + 1]);
 }

@@ -24,7 +24,7 @@ typedef struct qNode{
 void insertEdge(graph, int, int);
 void displayGraph(graph);
 void insertToList(vertex_ptr* , int);
-void BFS(graph, int);
+void BFS(graph, int); 
 
 void DFS_Visit(graph, int);
 void DFS(graph,int);

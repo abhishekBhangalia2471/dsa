@@ -27,54 +27,54 @@ int main(int argc, char *argv[])
 	root->parent = root->lchild = root->rchild=NULL;
 	int choice,val;  
 	
-    AVL_Insert(root,1);
-    AVL_Insert(root,2);
-    AVL_Insert(root,3);
-    AVL_Insert(root,6);
-    Inorder_Trav(root->rchild);
-    AVL_Delete(root,1);
-    printf("\n");
-    Inorder_Trav(root->rchild);
+    // AVL_Insert(root,1);
+    // AVL_Insert(root,2);
+    // AVL_Insert(root,3);
+    // AVL_Insert(root,6);
+    // Inorder_Trav(root->rchild);
+    // AVL_Delete(root,1);
+    // printf("\n");
+    // Inorder_Trav(root->rchild);
 
-	// do{
-	// 	printf("\n\nSelect your operation :\n\n1. Insert element\n2. Delete element\n3. Inorder Traversal\n4. Preorder Traversal\n5. Postorder Traversal\n0. QUIT\n\nEnter your choice here (0-5) : ");
-	// 	scanf("%d",&choice);
-	// 	if(choice==1){
-	// 		printf("\nEnter the number that you want to insert into BST : ");
-	// 		scanf("%d",&val);
-	// 		AVL_Insert(root,val);
-	// 	}
-	// 	else if(choice == 2){
-	// 		printf("\nEnter the number that you want to delete from BST : ");
-	// 		scanf("%d",&val);
-	// 		AVL_Delete(root,val);
-	// 	}
-	// 	else if(choice ==3){
-    //         printf("\nInorder Traversal : \n\n");
-    //         if (root->rchild != NULL)
-	// 		    Inorder_Trav(root->rchild);
-    //         else
-    //             printf("\nBST is empty !!!");
-	// 	}
-	// 	else if(choice == 4){
-    //         printf("\nPreorder Traversal : ");
-    //         if(root->rchild != NULL)
-	// 		    Preorder_Trav(root->rchild);
-    //         else 
-    //             printf("BST is empty !!!");
-	// 	}
-	// 	else if(choice == 5){
-    //         printf("\nPostorder Traversal : ");
-    //         if(root->rchild != NULL)
-	// 		    Postorder_Trav(root->rchild);
-    //         else 
-    //             printf("BST is empty !!!");
-	// 	}
-	// 	else if (choice ==0){
-	// 		printf("\n\nQuiting...");
-	// 		return 0;
-	// 	}
-	// }while(choice!=0);
+	do{
+		printf("\n\nSelect your operation :\n\n1. Insert element\n2. Delete element\n3. Inorder Traversal\n4. Preorder Traversal\n5. Postorder Traversal\n0. QUIT\n\nEnter your choice here (0-5) : ");
+		scanf("%d",&choice);
+		if(choice==1){
+			printf("\nEnter the number that you want to insert into BST : ");
+			scanf("%d",&val);
+			AVL_Insert(root,val);
+		}
+		else if(choice == 2){
+			printf("\nEnter the number that you want to delete from BST : ");
+			scanf("%d",&val);
+			AVL_Delete(root,val);
+		}
+		else if(choice ==3){
+            printf("\nInorder Traversal : \n\n");
+            if (root->rchild != NULL)
+			    Inorder_Trav(root->rchild);
+            else
+                printf("\nBST is empty !!!");
+		}
+		else if(choice == 4){
+            printf("\nPreorder Traversal : ");
+            if(root->rchild != NULL)
+			    Preorder_Trav(root->rchild);
+            else 
+                printf("BST is empty !!!");
+		}
+		else if(choice == 5){
+            printf("\nPostorder Traversal : ");
+            if(root->rchild != NULL)
+			    Postorder_Trav(root->rchild);
+            else 
+                printf("BST is empty !!!");
+		}
+		else if (choice ==0){
+			printf("\n\nQuiting...");
+			return 0;
+		}
+	}while(choice!=0);
 }
 
 void AVL_Insert(treeptr root, int val){
